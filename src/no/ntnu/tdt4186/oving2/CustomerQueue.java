@@ -9,6 +9,9 @@ import java.util.LinkedList;
 public class CustomerQueue {
 	private LinkedList<Customer> list;
 	private int queueLength;
+	private Gui gui;
+	private int[] chairs;
+	
 	/**
 	 * Creates a new customer queue.
 	 * @param queueLength	The maximum length of the queue.
@@ -16,23 +19,62 @@ public class CustomerQueue {
 	 */
     public CustomerQueue(int queueLength, Gui gui) {
 		// Incomplete
+    	this.queueLength = queueLength;
+    	this.gui = gui;
+    	this.list = new LinkedList<Customer>();
+    	chairs = new int[queueLength];
 	}
     
+    public boolean isFull(){
+    	return (queueLength == list.size());
+    }
+    
+    public boolean isEmpty(){
+    	return(list.size() == 0);
+    }
    
 	// Add more methods as needed
    
-   public synchronized void addCustomer(Customer c) throws InterruptedException {
+   public synchronized void addCustomer(Customer c) {
 	   
-	   while (list.size() < queueLength){
-		    wait();
-		    list.add(c);
-		    notify();
-	   }
+	   while (isFull()){
+		    try {
+				wait();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	   	}
+		list.add(c);
+	    for (int i = 0; i < chairs.length; i++) {
+			if(chairs[i] != 0) {
+				chairs[i] = c.getCustomerID();
+				gui.fillLoungeChair(i, c);
+				break;
+			}
+		}
+	    
+	    
+	    notify();
+	   
    }
-   public synchronized Customer getFromQueueCustomer() throws InterruptedException {
-	   while(list.size() != 0) {
-		   wait();
+   
+   public synchronized Customer getFromQueueCustomer() {
+	   while(isEmpty()) {
+		   try {
+			wait();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		  Customer c = list.removeFirst();
+		  for (int i = 0; i < chairs.length; i++) {
+			if(chairs[i] == c.getCustomerID()){
+				chairs[i] = 0;
+				gui.emptyLoungeChair(i);
+			}
+			break;
+		}
 		  notify();
 		  return c;
 	   }

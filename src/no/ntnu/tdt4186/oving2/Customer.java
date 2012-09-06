@@ -8,7 +8,7 @@ import javax.swing.*;
  */
 public class Customer implements Constants {
 	/** The ID of the next customer to be created */
-	public static int nextID = 0;
+	public static int nextID = 1;
 	/** The ID of this customer */
 	private int customerID;
 	/** An integer specifying the look of this customer, used by the GUI only */
