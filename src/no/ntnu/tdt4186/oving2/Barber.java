@@ -4,6 +4,11 @@ package no.ntnu.tdt4186.oving2;
  * Barbershop thread synchronization example.
  */
 public class Barber {
+	
+	CustomerQueue queue;
+	Gui gui;
+	int pos;
+	
 	/**
 	 * Creates a new barber.
 	 * @param queue		The customer queue.
@@ -11,6 +16,9 @@ public class Barber {
 	 * @param pos		The position of this barber's chair
 	 */
 	public Barber(CustomerQueue queue, Gui gui, int pos) { 
+		this.queue = queue;
+		this.gui = gui;
+		this.pos = pos;
 		// Incomplete
 	}
 

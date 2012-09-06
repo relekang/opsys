@@ -4,12 +4,18 @@ package no.ntnu.tdt4186.oving2;
  * Barbershop thread synchronization example.
  */
 public class Doorman {
+	
+	CustomerQueue queue;
+	Gui gui;
+	
 	/**
 	 * Creates a new doorman.
 	 * @param queue		The customer queue.
 	 * @param gui		A reference to the GUI interface.
 	 */
-	public Doorman(CustomerQueue queue, Gui gui) { 
+	public Doorman(CustomerQueue queue, Gui gui) {
+		this.queue = queue;
+		this.gui = gui;
 		// Incomplete
 	}
 
