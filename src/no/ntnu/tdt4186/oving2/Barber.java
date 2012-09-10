@@ -55,6 +55,7 @@ public class Barber extends Thread{
 				sleep(Globals.barberWork);
 				gui.println("Barber: working(sleeping)");
 				gui.emptyBarberChair(pos);
+				queue.payForHaircut();
 			} catch (InterruptedException e) {
 				// Silence is gold
 			}

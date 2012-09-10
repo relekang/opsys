@@ -10,6 +10,8 @@ public class CustomerQueue {
 	private int queueLength;
 	private Gui gui;
 	private int[] chairs;
+	private int paid;
+	private int served;
 	
 	/**
 	 * Creates a new customer queue.
@@ -17,11 +19,12 @@ public class CustomerQueue {
 	 * @param gui			A reference to the GUI interface.
 	 */
     public CustomerQueue(int queueLength, Gui gui) {
-		// Incomplete
     	this.queueLength = queueLength;
     	this.gui = gui;
+    	this.paid = 0;
+    	this.served = 0;
     	this.list = new LinkedList<Customer>();
-    	chairs = new int[queueLength];
+    	this.chairs = new int[queueLength];
 	}
     
     public boolean isFull(){
@@ -32,7 +35,6 @@ public class CustomerQueue {
     	return(list.size() == 0);
     }
    
-	// Add more methods as needed
    
    public synchronized void addCustomer(Customer c) {
 	   gui.println("Queue: Add customer");
@@ -40,8 +42,7 @@ public class CustomerQueue {
 		    try {
 				wait();
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				// Silence is gold
 			}
 	   	}
 		list.add(c);
@@ -63,8 +64,7 @@ public class CustomerQueue {
 		   try {
 			   wait();
 		   } catch (InterruptedException e) {
-			   // TODO Auto-generated catch block
-			   e.printStackTrace();
+			   // Silence is gold
 		   }
 	   }
 	   Customer c = list.removeFirst();
@@ -72,11 +72,16 @@ public class CustomerQueue {
 		   if(chairs[i] == c.getCustomerID()){
 			   chairs[i] = 0;
 			   gui.emptyLoungeChair(i);
+			   this.served++;
 		   }
 		   break;
 	   }
 	   notify();
 	   return c; 
+   }
+   
+   public synchronized void payForHaircut(){
+	   this.paid++;
    }
 }
 
