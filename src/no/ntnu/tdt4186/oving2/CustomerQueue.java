@@ -1,6 +1,5 @@
 package no.ntnu.tdt4186.oving2;
 
-import java.util.List;
 import java.util.LinkedList;
 
 /**
@@ -36,7 +35,7 @@ public class CustomerQueue {
 	// Add more methods as needed
    
    public synchronized void addCustomer(Customer c) {
-	   
+	   gui.println("Queue: Add customer");
 	   while (isFull()){
 		    try {
 				wait();
@@ -58,27 +57,26 @@ public class CustomerQueue {
 	    notify();
 	   
    }
-   
+
    public synchronized Customer getFromQueueCustomer() {
 	   while(isEmpty()) {
 		   try {
-			wait();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		  Customer c = list.removeFirst();
-		  for (int i = 0; i < chairs.length; i++) {
-			if(chairs[i] == c.getCustomerID()){
-				chairs[i] = 0;
-				gui.emptyLoungeChair(i);
-			}
-			break;
-		}
-		  notify();
-		  return c;
+			   wait();
+		   } catch (InterruptedException e) {
+			   // TODO Auto-generated catch block
+			   e.printStackTrace();
+		   }
 	   }
-	   return null; 
+	   Customer c = list.removeFirst();
+	   for (int i = 0; i < chairs.length; i++) {
+		   if(chairs[i] == c.getCustomerID()){
+			   chairs[i] = 0;
+			   gui.emptyLoungeChair(i);
+		   }
+		   break;
 	   }
+	   notify();
+	   return c; 
    }
+}
 

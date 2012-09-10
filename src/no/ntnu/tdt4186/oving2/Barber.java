@@ -20,33 +20,44 @@ public class Barber extends Thread{
 		this.gui = gui;
 		this.pos = pos;
 		running = false;
-		// Incomplete
 	}
 
 	/**
 	 * Starts the barber running as a separate thread.
 	 */
 	public void startThread() {
-		this.startThread();
 		running = true; 
+		this.start();
 	}
 
 	/**
 	 * Stops the barber thread.
 	 */
 	public void stopThread() {
-		// Incomplete
+		running = false;
 	}
 	public void run() {
+		System.out.println("Starting a barber-thread " + this.toString());
 		while(running){
 			try {
-				sleep(Constants.MIN_BARBER_SLEEP);
+				gui.barberIsSleeping(pos);
+				gui.println("Barber: sleeping");
+				sleep(Globals.barberSleep);
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				// Silence is gold
 			}
-			Customer c = new Customer();
-			queue.addCustomer(c);
+			gui.barberIsAwake(pos);
+			gui.println("Barber: awake");
+			Customer c = queue.getFromQueueCustomer();
+			gui.fillBarberChair(pos, c);
+			
+			try {
+				sleep(Globals.barberWork);
+				gui.println("Barber: working(sleeping)");
+				gui.emptyBarberChair(pos);
+			} catch (InterruptedException e) {
+				// Silence is gold
+			}
 		
 			
 		}

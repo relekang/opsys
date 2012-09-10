@@ -17,14 +17,13 @@ public class Doorman extends Thread{
 	public Doorman(CustomerQueue queue, Gui gui) {
 		this.queue = queue;
 		this.gui = gui;
-		// Incomplete
 	}
 
 	/**
 	 * Starts the doorman running as a separate thread.
 	 */
 	public void startThread() {
-		// Incomplete
+		// 
 		running = true;
 		this.start();
 		
@@ -34,19 +33,16 @@ public class Doorman extends Thread{
 	 * Stops the doorman thread.
 	 */
 	public void stopThread() {
-		// Incomplete
 		running = false; 
-		
-		
 	}
 	
 	public void run () {
+		System.out.println("Starting a doorman-thread " + this.toString());
 		while(running){
 			try {
 				sleep(Constants.MIN_DOORMAN_SLEEP);
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				// Silence is gold
 			}
 			Customer c = new Customer();
 			queue.addCustomer(c);
@@ -54,6 +50,4 @@ public class Doorman extends Thread{
 			
 		}
 	}
-
-	// Add more methods as needed
 }
