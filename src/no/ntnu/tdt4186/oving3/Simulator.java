@@ -44,7 +44,7 @@ public class Simulator implements Constants
 		statistics = new Statistics();
 		eventQueue = new EventQueue();
 		memory = new Memory(memoryQueue, memorySize, statistics);
-		cpu = new CPU(cpuQueue,memory, statistics,maxCpuTime);
+		cpu = new CPU(cpuQueue,memory, statistics,maxCpuTime, this);
 		clock = 0;
 		// Add code as needed
 		//TODO:
@@ -80,6 +80,7 @@ public class Simulator implements Constants
 
 			// Note that the processing of most events should lead to new
 			// events being added to the event queue!
+			
 
 		}
 		System.out.println("..done.");
@@ -139,9 +140,10 @@ public class Simulator implements Constants
 			// TODO: Add this process to the CPU queue!
 			// Also add new events to the event queue if needed
 			cpu.insertProcess(p);
-
+			eventQueue.insertEvent(new Event(SWITCH_PROCESS, clock + cpu.getMaxCpuTime()));
+			
 			// Try to use the freed memory:
-			// WTF?flushMemoryQueue();
+			flushMemoryQueue();
 			// Update statistics
 			p.updateStatistics(statistics);
 
@@ -155,15 +157,18 @@ public class Simulator implements Constants
 	 */
 	private void switchProcess() {
 		//TODO:
-		// Incomplete
+		//process switching takes 1ms ref: page 153, modern operativ systems
+//		try {
+//			wait(1);
+//		} catch (InterruptedException e) { }
+		cpu.process();
 	}
 
 	/**
 	 * Ends the active process, and deallocates any resources allocated to it.
 	 */
 	private void endProcess() {
-		//TODO:
-		// Incomplete
+		cpu.endProcess();
 	}
 
 	/**
@@ -209,29 +214,41 @@ public class Simulator implements Constants
 		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 		System.out.println("Please input system parameters: ");
 
-		System.out.print("Memory size (KB): ");
-		long memorySize = readLong(reader);
-		while(memorySize < 400) {
-			System.out.println("Memory size must be at least 400 KB. Specify memory size (KB): ");
-			memorySize = readLong(reader);
-		}
-
-		System.out.print("Maximum uninterrupted cpu time for a process (ms): ");
-		long maxCpuTime = readLong(reader);
-
-		System.out.print("Average I/O operation time (ms): ");
-		long avgIoTime = readLong(reader);
-
-		System.out.print("Simulation length (ms): ");
-		long simulationLength = readLong(reader);
-		while(simulationLength < 1) {
-			System.out.println("Simulation length must be at least 1 ms. Specify simulation length (ms): ");
-			simulationLength = readLong(reader);
-		}
-
-		System.out.print("Average time between process arrivals (ms): ");
-		long avgArrivalInterval = readLong(reader);
-
+//		System.out.print("Memory size (KB): ");
+//		long memorySize = readLong(reader);
+//		while(memorySize < 400) {
+//			System.out.println("Memory size must be at least 400 KB. Specify memory size (KB): ");
+//			memorySize = readLong(reader);
+//		}
+//
+//		System.out.print("Maximum uninterrupted cpu time for a process (ms): ");
+//		long maxCpuTime = readLong(reader);
+//
+//		System.out.print("Average I/O operation time (ms): ");
+//		long avgIoTime = readLong(reader);
+//
+//		System.out.print("Simulation length (ms): ");
+//		long simulationLength = readLong(reader);
+//		while(simulationLength < 1) {
+//			System.out.println("Simulation length must be at least 1 ms. Specify simulation length (ms): ");
+//			simulationLength = readLong(reader);
+//		}
+//
+//		System.out.print("Average time between process arrivals (ms): ");
+//		long avgArrivalInterval = readLong(reader);
+		long memorySize = 2048;
+		long maxCpuTime = 500;
+		long avgIoTime = 225;
+		long simulationLength = 250000;
+		long avgArrivalInterval = 5000;
 		SimulationGui gui = new SimulationGui(memorySize, maxCpuTime, avgIoTime, simulationLength, avgArrivalInterval);
+	}
+
+	public void addEvent(int eventType, long time) {
+		eventQueue.insertEvent(new Event(eventType, clock + time));
+	}
+
+	public void addEvent(Event event) {
+		eventQueue.insertEvent(event);
 	}
 }
