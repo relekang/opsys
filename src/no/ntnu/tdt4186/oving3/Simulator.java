@@ -94,22 +94,28 @@ public class Simulator implements Constants
 	 * @param event	The event to be processed.
 	 */
 	private void processEvent(Event event) {
-		switch (event.getType()) {
-			case NEW_PROCESS:
-				createProcess();
-				break;
-			case SWITCH_PROCESS:
-				switchProcess();
-				break;
-			case END_PROCESS:
-				endProcess();
-				break;
-			case IO_REQUEST:
-				processIoRequest();
-				break;
-			case END_IO:
-				endIoOperation();
-				break;
+		try{
+			switch (event.getType()) {
+				case NEW_PROCESS:
+					createProcess();
+					break;
+				case SWITCH_PROCESS:
+					switchProcess();
+					break;
+				case END_PROCESS:
+					endProcess();
+					break;
+				case IO_REQUEST:
+					processIoRequest();
+					break;
+				case END_IO:
+					endIoOperation();
+					break;
+			}
+		}
+		catch(IndexOutOfBoundsException e){
+			System.err.print("IndexOutOfBounds");
+			System.out.println(" who cares");
 		}
 	}
 
@@ -140,7 +146,6 @@ public class Simulator implements Constants
 			// TODO: Add this process to the CPU queue!
 			// Also add new events to the event queue if needed
 			cpu.insertProcess(p);
-			eventQueue.insertEvent(new Event(SWITCH_PROCESS, clock + cpu.getMaxCpuTime()));
 			
 			// Try to use the freed memory:
 			flushMemoryQueue();
@@ -149,6 +154,10 @@ public class Simulator implements Constants
 
 			// Check for more free memory
 			p = memory.checkMemory(clock);
+			
+		}
+		if(cpu.getQueueCount() > 0){
+			eventQueue.insertEvent(new Event(SWITCH_PROCESS, clock + cpu.getMaxCpuTime()));
 		}
 	}
 
@@ -157,10 +166,6 @@ public class Simulator implements Constants
 	 */
 	private void switchProcess() {
 		//TODO:
-		//process switching takes 1ms ref: page 153, modern operativ systems
-//		try {
-//			wait(1);
-//		} catch (InterruptedException e) { }
 		cpu.process();
 	}
 
@@ -240,7 +245,7 @@ public class Simulator implements Constants
 		long maxCpuTime = 500;
 		long avgIoTime = 225;
 		long simulationLength = 250000;
-		long avgArrivalInterval = 5000;
+		long avgArrivalInterval = 500;
 		SimulationGui gui = new SimulationGui(memorySize, maxCpuTime, avgIoTime, simulationLength, avgArrivalInterval);
 	}
 

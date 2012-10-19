@@ -7,6 +7,7 @@ public class CPU {
 	private long maxCpuTime;
 	private Memory memory;
 	private Simulator simulator;
+	private long lastTime;
 	
 	public CPU(Queue cpuQueue, Memory memory, Statistics statistics, long maxCpuTime, Simulator simulator){
 		this.cpuQueue = cpuQueue;
@@ -23,8 +24,8 @@ public class CPU {
 	public void process() {
 		Process p = (Process) cpuQueue.getNext();
 		if(p.getCpuTimeNeeded() > maxCpuTime){
-			cpuQueue.removeNext();
-			System.out.println("p.CpuTimeNeeded calculated: " + p.getCpuTimeNeeded() + "-" + maxCpuTime + " = " + (p.getCpuTimeNeeded() - maxCpuTime));
+			p = (Process) cpuQueue.removeNext();
+			//System.out.println("p.CpuTimeNeeded calculated: " + p.getCpuTimeNeeded() + "-" + maxCpuTime + " = " + (p.getCpuTimeNeeded() - maxCpuTime));
 			p.setCpuTimeNeeded(p.getCpuTimeNeeded() - maxCpuTime);
 			cpuQueue.insert(p);
 			simulator.addEvent(Constants.SWITCH_PROCESS, maxCpuTime);
@@ -40,6 +41,10 @@ public class CPU {
 
 	public long getMaxCpuTime() {
 		return this.maxCpuTime;
+	}
+
+	public int getQueueCount() {
+		return cpuQueue.getQueueLength();
 	}
 	
 }
