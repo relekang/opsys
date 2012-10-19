@@ -62,6 +62,8 @@ public class Process implements Constants
 		cpuTimeNeeded = 100 + (long)(Math.random()*9900);
 		// Average interval between I/O requests varies from 1% to 25% of CPU time needed
 		avgIoInterval = (1 + (long)(Math.random()*25))*cpuTimeNeeded/100;
+		timeToNextIoOperation = avgIoInterval;
+		
 		// The first and latest event involving this process is its creation
 		timeOfLastEvent = creationTime;
 		// Assign a process ID
@@ -71,6 +73,7 @@ public class Process implements Constants
 		int green = 64+(int)((processId*47)%128);
 		int blue = 64+(int)((processId*53)%128);
 		color = new Color(red, green, blue);
+		
 	}
 
 	/**
@@ -127,5 +130,20 @@ public class Process implements Constants
 		this.cpuTimeNeeded = cpuTimeNeeded;
 	}
 
+	public long getTimeToNextIoOperation() {
+		return timeToNextIoOperation;
+	}
+
+	public void setTimeToNextIoOperation(long timeToNextIoOperation) {
+		this.timeToNextIoOperation = timeToNextIoOperation;
+		
+	}
+
+	public long getProcessId() {
+		return processId;
+	}
+	public String toString(){
+		return "Process-" + processId + ": " + "cpuTimeNeeded=" + cpuTimeNeeded + " timeToNextIoOperation=" + timeToNextIoOperation;
+	}
 
 }

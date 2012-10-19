@@ -8,6 +8,7 @@ public class CPU {
 	private Memory memory;
 	private Simulator simulator;
 	private long lastTime;
+	private IO io;
 	
 	public CPU(Queue cpuQueue, Memory memory, Statistics statistics, long maxCpuTime, Simulator simulator){
 		this.cpuQueue = cpuQueue;
@@ -16,6 +17,9 @@ public class CPU {
 		this.memory = memory;
 		this.simulator = simulator;
 	}
+	public void setIo(IO io){
+		this.io = io;
+	}
 	
 	public void insertProcess(Process p){
 		cpuQueue.insert(p);
@@ -23,15 +27,45 @@ public class CPU {
 
 	public void process() {
 		Process p = (Process) cpuQueue.getNext();
-		if(p.getCpuTimeNeeded() > maxCpuTime){
-			p = (Process) cpuQueue.removeNext();
-			//System.out.println("p.CpuTimeNeeded calculated: " + p.getCpuTimeNeeded() + "-" + maxCpuTime + " = " + (p.getCpuTimeNeeded() - maxCpuTime));
-			p.setCpuTimeNeeded(p.getCpuTimeNeeded() - maxCpuTime);
-			cpuQueue.insert(p);
-			simulator.addEvent(Constants.SWITCH_PROCESS, maxCpuTime);
-		} else {
+		System.out.println("processing " + p.toString());
+		if(p.getCpuTimeNeeded() == 0 ){
 			simulator.addEvent(Constants.END_PROCESS, p.getCpuTimeNeeded());
+			return;
 		}
+		long time = 0;
+		if(p.getTimeToNextIoOperation() < p.getCpuTimeNeeded() && p.getTimeToNextIoOperation() < maxCpuTime){
+			if(p.getCpuTimeNeeded() > maxCpuTime){
+				time = maxCpuTime - p.getTimeToNextIoOperation();
+			} else {
+				time = p.getCpuTimeNeeded() - p.getTimeToNextIoOperation();
+			}
+			
+			long ioTime = p.getTimeToNextIoOperation();
+			p.setTimeToNextIoOperation(0);
+			System.out.println("p.getTimeToNextIoOperation() < maxCpuTime: p.CpuTimeNeeded calculated: " + p.getCpuTimeNeeded() + "-" + time + " = " + (p.getCpuTimeNeeded() - time));
+			p.setCpuTimeNeeded(p.getCpuTimeNeeded() - time);
+			System.out.println(io);
+			io.insert(p);
+			cpuQueue.removeNext();
+			
+			simulator.addEvent(Constants.IO_REQUEST, ioTime);
+			simulator.addEvent(Constants.SWITCH_PROCESS, time);
+			
+		} else {
+			
+			if(p.getCpuTimeNeeded() > maxCpuTime){
+				p = (Process) cpuQueue.removeNext();
+				System.out.println("p.getTimeToNextIoOperation() >= maxCpuTime: p.CpuTimeNeeded calculated: " + p.getCpuTimeNeeded() + "-" + maxCpuTime + " = " + (p.getCpuTimeNeeded() - maxCpuTime));
+				p.setCpuTimeNeeded(p.getCpuTimeNeeded() - maxCpuTime);
+				p.setTimeToNextIoOperation(p.getTimeToNextIoOperation() - maxCpuTime);
+				cpuQueue.insert(p);
+				simulator.addEvent(Constants.SWITCH_PROCESS, maxCpuTime);
+			} else {
+				simulator.addEvent(Constants.END_PROCESS, p.getCpuTimeNeeded());
+			}
+			
+		}
+		
 	}
 
 	public void endProcess() {
