@@ -45,6 +45,8 @@ public class Simulator implements Constants
 		memory = new Memory(memoryQueue, memorySize, statistics);
 		clock = 0;
 		// Add code as needed
+		//TODO:
+		
     }
 
     /**
@@ -152,6 +154,7 @@ public class Simulator implements Constants
 	 * Simulates a process switch.
 	 */
 	private void switchProcess() {
+		//TODO:
 		// Incomplete
 	}
 
@@ -159,6 +162,7 @@ public class Simulator implements Constants
 	 * Ends the active process, and deallocates any resources allocated to it.
 	 */
 	private void endProcess() {
+		//TODO:
 		// Incomplete
 	}
 
@@ -167,6 +171,7 @@ public class Simulator implements Constants
 	 * perform an I/O operation.
 	 */
 	private void processIoRequest() {
+		//TODO:
 		// Incomplete
 	}
 
@@ -175,6 +180,7 @@ public class Simulator implements Constants
 	 * is done with its I/O operation.
 	 */
 	private void endIoOperation() {
+		//TODO:
 		// Incomplete
 	}
 
