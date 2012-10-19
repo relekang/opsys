@@ -11,6 +11,7 @@ public class Simulator implements Constants
     private EventQueue eventQueue;
 	/** Reference to the memory unit */
     private Memory memory;
+    private CPU cpu;
 	/** Reference to the GUI interface */
 	private Gui gui;
 	/** Reference to the statistics collector */
@@ -43,6 +44,7 @@ public class Simulator implements Constants
 		statistics = new Statistics();
 		eventQueue = new EventQueue();
 		memory = new Memory(memoryQueue, memorySize, statistics);
+		cpu = new CPU(cpuQueue,memory, statistics,maxCpuTime);
 		clock = 0;
 		// Add code as needed
 		//TODO:
@@ -136,12 +138,10 @@ public class Simulator implements Constants
 			
 			// TODO: Add this process to the CPU queue!
 			// Also add new events to the event queue if needed
+			cpu.insertProcess(p);
 
-			// Since we haven't implemented the CPU and I/O device yet,
-			// we let the process leave the system immediately, for now.
-			memory.processCompleted(p);
 			// Try to use the freed memory:
-			flushMemoryQueue();
+			// WTF?flushMemoryQueue();
 			// Update statistics
 			p.updateStatistics(statistics);
 
