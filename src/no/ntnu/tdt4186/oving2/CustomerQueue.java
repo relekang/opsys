@@ -6,7 +6,7 @@ import java.util.LinkedList;
  * This class implements a queue of customers as a circular buffer.
  */
 public class CustomerQueue {
-	private LinkedList<Customer> list;
+	private LinkedList<Customer> queue;
 	private int queueLength;
 	private Gui gui;
 	private int[] chairs;
@@ -23,16 +23,16 @@ public class CustomerQueue {
     	this.gui = gui;
     	this.paid = 0;
     	this.served = 0;
-    	this.list = new LinkedList<Customer>();
+    	this.queue = new LinkedList<Customer>();
     	this.chairs = new int[queueLength];
 	}
     
     public boolean isFull(){
-    	return (queueLength == list.size());
+    	return (queueLength == queue.size());
     }
     
     public boolean isEmpty(){
-    	return(list.size() == 0);
+    	return(queue.size() == 0);
     }
    
    
@@ -45,9 +45,9 @@ public class CustomerQueue {
 				// Silence is gold
 			}
 	   	}
-		list.add(c);
+		queue.add(c);
 	    for (int i = 0; i < chairs.length; i++) {
-			if(chairs[i] != 0) {
+			if(chairs[i] == 0) {
 				chairs[i] = c.getCustomerID();
 				gui.fillLoungeChair(i, c);
 				break;
@@ -67,7 +67,7 @@ public class CustomerQueue {
 			   // Silence is gold
 		   }
 	   }
-	   Customer c = list.removeFirst();
+	   Customer c = queue.removeFirst();
 	   for (int i = 0; i < chairs.length; i++) {
 		   if(chairs[i] == c.getCustomerID()){
 			   chairs[i] = 0;
