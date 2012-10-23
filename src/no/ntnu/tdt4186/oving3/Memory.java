@@ -54,6 +54,7 @@ public class Memory {
 		if(!memoryQueue.isEmpty()) { 
 			Process nextProcess = (Process) memoryQueue.getNext();
 			if(nextProcess.getMemoryNeeded() <= freeMemory) {
+				System.out.println("\n(checkMemory) " + nextProcess.getMemoryNeeded() +" <= " + freeMemory);
 				// Allocate memory to this process
 				freeMemory -= nextProcess.getMemoryNeeded();
 				nextProcess.leftMemoryQueue(clock);

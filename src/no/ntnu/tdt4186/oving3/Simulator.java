@@ -157,6 +157,8 @@ public class Simulator implements Constants
 			
 			// Update statistics
 			p.updateStatistics(statistics);
+			
+			flushMemoryQueue();
 
 			// Check for more free memory
 			p = null;
@@ -169,23 +171,19 @@ public class Simulator implements Constants
 	 * Simulates a process switch.
 	 */
 	private void switchProcess() {
-		long mem = cpu.getMemory() + io.getMemory() + memory.getFreeMemory();
-		System.out.println("(switchProcess) Totalt: " + mem + "("+ cpu.getMemory() + "+" + io.getMemory() + "+" + memory.getFreeMemory() + ")");
-		System.out.println("(switchProcess) Clock:" + clock);
-		cpu.setActiveProcess();
-		mem = cpu.getMemory() + io.getMemory() + memory.getFreeMemory();
-		System.out.println("(switchProcess) Totalt: " + mem + "("+ cpu.getMemory() + "+" + io.getMemory() + "+" + memory.getFreeMemory() + ")\n");
-		gui.setCpuActive(cpu.getActiveProcess());
-		cpu.process();
-		Process active_process = cpu.getActiveProcess();
-		
-		if(active_process.getCpuTimeNeeded() == 0 || active_process.getCpuTimeNeeded() < cpu.getMaxCpuTime()){
-			eventQueue.insertEvent(new Event(END_PROCESS, clock + active_process.getCpuTimeNeeded()));
-		} 
-		if(active_process.getTimeToNextIoOperation() < cpu.getMaxCpuTime() && active_process.getTimeToNextIoOperation() < active_process.getCpuTimeNeeded()){
-			eventQueue.insertEvent(new Event(IO_REQUEST, clock + active_process.getTimeToNextIoOperation()));
-		}
 		eventQueue.insertEvent(new Event(SWITCH_PROCESS, clock + cpu.getMaxCpuTime()));
+		cpu.setActiveProcess();
+		gui.setCpuActive(cpu.getActiveProcess());
+		Process active_process = cpu.getActiveProcess();
+		try{
+			if(active_process.getTimeToNextIoOperation() < cpu.getMaxCpuTime() && active_process.getTimeToNextIoOperation() < active_process.getCpuTimeNeeded()){
+				eventQueue.insertEvent(new Event(IO_REQUEST, clock + active_process.getTimeToNextIoOperation()));
+			} else if(active_process.getCpuTimeNeeded() < cpu.getMaxCpuTime()){
+				eventQueue.insertEvent(new Event(END_PROCESS, clock + active_process.getCpuTimeNeeded()));
+			} 
+		} catch (NullPointerException e){ }
+		gui.setCpuActive(cpu.process());
+		
 	}
 
 	/**
@@ -221,7 +219,7 @@ public class Simulator implements Constants
 		io.endIo();
 		gui.setIoActive(null);
 		if(!io.isQueueEmpty())
-			eventQueue.insertEvent(new Event(IO_REQUEST, clock + 0));
+			eventQueue.insertEvent(new Event(IO_REQUEST, clock + 10));
 			
 	}
 
@@ -253,7 +251,7 @@ public class Simulator implements Constants
 		long maxCpuTime = 500;
 		long avgIoTime = 225;
 		long simulationLength = 250000;
-		long avgArrivalInterval = 500;
+		long avgArrivalInterval = 5000;
 		
 		if(memorySize == 0 ){
 			System.out.println("Please input system parameters: ");

@@ -40,7 +40,8 @@ public class Queue extends JPanel implements Constants {
 	 * @param o	The object to be added to the queue.
 	 */
 	public void insert(Object o) {
-		content.add(o);
+		if(!content.contains(o))
+			content.add(o);
 		repaint();
 	}
 

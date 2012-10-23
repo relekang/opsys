@@ -1,7 +1,7 @@
 package no.ntnu.tdt4186.oving3;
 
 public class IO {
-	private Queue ioQueue;
+	public Queue ioQueue; //FIXME
 	private long avgIoTime;
 	private Statistics statistics;
 	private CPU cpu;

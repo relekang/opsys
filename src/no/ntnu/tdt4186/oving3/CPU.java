@@ -32,20 +32,34 @@ public class CPU {
 	}
 
 	public void setActiveProcess() {
-		Process p = (Process) cpuQueue.removeNext();
-		this.active_process = p;
-		//System.out.println("processing " + p.toString());
+		if(!cpuQueue.isEmpty()){
+			Process p = (Process) cpuQueue.removeNext();
+			if(this.active_process != null)
+				insertProcess(this.active_process);
+			this.active_process = p;
+			System.out.println("(setActiveProcess) timeNeededInCpu: " + this.active_process.getCpuTimeNeeded());
+		}
 	}
 	
-	public void process(){
+	public Process process(){
+		if(this.active_process == null) return null;
+		
 		if(this.active_process.getCpuTimeNeeded() > maxCpuTime){
 			this.active_process.setCpuTimeNeeded(this.active_process.getCpuTimeNeeded() - maxCpuTime);
-		} else {
+			if(this.active_process.getTimeToNextIoOperation() < maxCpuTime){
+				io.insert(active_process);
+				System.err.println("(process) timeUntilIo: " + this.active_process.getTimeToNextIoOperation());
+				this.active_process = null;
+			}
+		} else if(this.active_process.getTimeToNextIoOperation() > this.active_process.getCpuTimeNeeded()) {
 			this.active_process.setCpuTimeNeeded(0);
-		}
-		if(this.active_process.getTimeToNextIoOperation() < maxCpuTime){
+		} else if(this.active_process.getTimeToNextIoOperation() < this.active_process.getCpuTimeNeeded()){
 			io.insert(active_process);
+			System.err.println("(process) timeUntilIo: " + this.active_process.getTimeToNextIoOperation());
+			this.active_process = null;
 		}
+		
+		return this.active_process;
 	}
 
 	public void endProcess() {
@@ -63,6 +77,7 @@ public class CPU {
 		return cpuQueue.getQueueLength();
 	}
 	public long getMemory() {
+		
 		long memory = 0;
 		if(this.active_process != null)
 			memory += this.active_process.getMemoryNeeded();
@@ -70,6 +85,7 @@ public class CPU {
 			Process p = (Process) cpuQueue.content.get(i);
 			memory += p.getMemoryNeeded();
 		}
+		System.out.println("(getMemory) average size: " + (memory/(cpuQueue.content.size()+1)));
 		return memory;
 	}
 	
