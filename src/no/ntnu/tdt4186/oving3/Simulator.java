@@ -79,6 +79,7 @@ public class Simulator implements Constants
 			memory.timePassed(timeDifference);
 			gui.timePassed(timeDifference);
 			cpu.timePassed(timeDifference);
+			io.timePassed(timeDifference);
 			// Deal with the event
 			if (clock < simulationLength) {
 				processEvent(event);
@@ -173,9 +174,19 @@ public class Simulator implements Constants
 	 */
 	private void switchProcess() {
 		eventQueue.insertEvent(new Event(SWITCH_PROCESS, clock + cpu.getMaxCpuTime()));
-		cpu.setActiveProcess();
+		Process oldProcess = cpu.getActiveProcess();
+		if(oldProcess != null){
+		cpu.getActiveProcess().leftCpu(clock);
+		
+		}
+		
+		cpu.setActiveProcess(clock);
+		
 		gui.setCpuActive(cpu.getActiveProcess());
 		Process active_process = cpu.getActiveProcess();
+		
+		
+		
 		try{
 			if(active_process.getTimeToNextIoOperation() < cpu.getMaxCpuTime() && active_process.getTimeToNextIoOperation() < active_process.getCpuTimeNeeded()){
 				eventQueue.insertEvent(new Event(IO_REQUEST, clock + active_process.getTimeToNextIoOperation()));
@@ -201,7 +212,7 @@ public class Simulator implements Constants
 	 */
 	private void processIoRequest() {
 		if(io.getActiveProcess() == null){
-			io.setActiveProcess();
+			io.setActiveProcess(clock);
 			gui.setIoActive(io.getActiveProcess());
 			io.processIo(); 
 			statistics.nofProcessedIoOps++;
@@ -218,7 +229,13 @@ public class Simulator implements Constants
 	 */
 	private void endIoOperation() {
 		//TODO:
+		Process oldProcess = io.getActiveProcess();
 		io.endIo();
+		
+		if(oldProcess !=null) {
+			oldProcess.leftIo(clock);
+			oldProcess.enterCpuQueue(clock);
+		}
 		gui.setIoActive(null);
 		if(!io.isQueueEmpty())
 			eventQueue.insertEvent(new Event(IO_REQUEST, clock + 10));

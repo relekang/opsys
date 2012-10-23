@@ -38,9 +38,9 @@ public class Statistics
 	
 	public long ioTimeSpentIn=0;
 	
-	public long cpuQueueLengthTime;
+	public long cpuQueueLengthTime = 0;
 	
-	public long ioQueueLengthTime;
+	public long ioQueueLengthTime = 0;;
 	 
 	/**
 	 * Prints out a report summarizing all collected data about the simulation.

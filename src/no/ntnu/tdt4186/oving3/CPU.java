@@ -29,15 +29,20 @@ public class CPU {
 	
 	public void insertProcess(Process p){
 		cpuQueue.insert(p);
-		statistics.nofProcessesPlacedInCpuQueue++;
 	}
 
-	public void setActiveProcess() {
+	public void setActiveProcess(long clock) {
 		if(!cpuQueue.isEmpty()){
 			Process p = (Process) cpuQueue.removeNext();
-			if(this.active_process != null)
+			if(this.active_process != null) {
 				insertProcess(this.active_process);
+			
+				active_process.leftCpu(clock);
+				active_process.enterCpuQueue(clock);
+			}
+				
 			this.active_process = p;
+			active_process.enterCpu(clock);
 			System.out.println("(setActiveProcess) timeNeededInCpu: " + this.active_process.getCpuTimeNeeded());
 		}
 	}

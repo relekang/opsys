@@ -49,9 +49,7 @@ public class Process implements Constants
 	/** The global time of the last event involving this process */
 	private long timeOfLastEvent;
 	
-	private long timeSpentInCpuQueue =0;
 	
-	private long timeSpentInIoQueue =0;
 
 	/**
 	 * Creates a new process with given parameters. Other parameters are randomly
@@ -110,21 +108,21 @@ public class Process implements Constants
     
     public void enterCpu(long clock){
     	timeSpentInReadyQueue += clock - timeOfLastEvent;
+    	System.out.println("Time spent in readyqueue               "+timeSpentInReadyQueue);
     	timeOfLastEvent = clock;
-    	
     }
     public void enterCpuQueue(long clock){
     	timeOfLastEvent = clock;
-    	
+    	nofTimesInReadyQueue++; 	
     }
     public void enterIoQueue(long clock){
     	timeOfLastEvent = clock;
+    	nofTimesInIoQueue++;
     	
     }
     public void enterIo(long clock){
     	timeSpentWaitingForIo= clock - timeOfLastEvent;
-    	timeOfLastEvent = clock;
-    	
+    	timeOfLastEvent = clock;    	
     }
     public void leftCpu(long clock){
     	timeSpentInCpu += clock - timeOfLastEvent;
@@ -152,10 +150,19 @@ public class Process implements Constants
      */
 	public void updateStatistics(Statistics statistics) {
 		statistics.totalTimeSpentWaitingForMemory += timeSpentWaitingForMemory;
+
 		statistics.nofCompletedProcesses++;
+		
 		statistics.cpuTimeSpentWaiting += timeSpentInReadyQueue;
 		statistics.cpuTimeSpentProcessing += timeSpentInCpu;
+		statistics.nofProcessesPlacedInCpuQueue += nofTimesInReadyQueue;
+		statistics.cpuTimeSpentProcessing += this.timeSpentInCpu;
+		System.err.println("Time spent processing " + timeSpentInCpu);
 		
+		
+		statistics.ioTimeSpentWaiting += timeSpentWaitingForIo;
+	    statistics.ioTimeSpentIn += timeSpentInIo;
+	    statistics.nofProcessesPlacedInIoQueue += nofTimesInIoQueue;
 	}
 
 	public long getCpuTimeNeeded() {

@@ -13,9 +13,10 @@ public class IO {
 		this.statistics = statistics;
 		this.cpu = cpu;
 	}
-	public void setActiveProcess() {
+	public void setActiveProcess(long clock) {
 		Process p = (Process) ioQueue.removeNext();
 		this.active_process = p;
+		p.enterIo(clock);
 		//System.out.println("IO: " + p.toString());
 	}
 	public Process getActiveProcess() {
