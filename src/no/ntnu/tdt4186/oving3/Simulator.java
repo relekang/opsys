@@ -168,15 +168,17 @@ public class Simulator implements Constants
 	 * Simulates a process switch.
 	 */
 	private void switchProcess() {
-		//TODO:
+		cpu.setActiveProcess();
+		gui.setCpuActive(cpu.getActiveProcess());
 		cpu.process();
+		eventQueue.insertEvent(new Event(SWITCH_PROCESS, clock + cpu.getMaxCpuTime()));
 	}
 
 	/**
 	 * Ends the active process, and deallocates any resources allocated to it.
 	 */
 	private void endProcess() {
-		cpu.endProcess();
+		//
 	}
 
 	/**
@@ -230,7 +232,7 @@ public class Simulator implements Constants
 		long maxCpuTime = 500;
 		long avgIoTime = 225;
 		long simulationLength = 250000;
-		long avgArrivalInterval = 5000;
+		long avgArrivalInterval = 500;
 		
 		if(memorySize == 0 ){
 			System.out.println("Please input system parameters: ");
