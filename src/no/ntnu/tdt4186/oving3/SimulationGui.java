@@ -182,7 +182,7 @@ public class SimulationGui extends JFrame implements Constants, ActionListener, 
 		timeElapsedLabel.repaint();
 		try	{
 			if(sleep && isShowing())
-				System.out.println("sleeptime: " + time);
+				//System.out.println("sleeptime: " + time);
 				Thread.sleep((10000-simulationSpeedSlider.getValue())*time/3000);
 		} catch (InterruptedException ie) {}
 	}

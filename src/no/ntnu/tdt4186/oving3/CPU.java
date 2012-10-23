@@ -33,12 +33,8 @@ public class CPU {
 
 	public void setActiveProcess() {
 		Process p = (Process) cpuQueue.removeNext();
-		if(p.getCpuTimeNeeded() == 0){
-			endProcess(p);
-			p = (Process) cpuQueue.removeNext();
-		}
-			active_process = p;
-			System.out.println("processing " + p.toString());
+		this.active_process = p;
+		//System.out.println("processing " + p.toString());
 	}
 	
 	public void process(){
@@ -52,8 +48,11 @@ public class CPU {
 		}
 	}
 
-	public void endProcess(Process p) {
-		memory.processCompleted(p);
+	public void endProcess() {
+		Process p = this.active_process;
+		this.active_process = null;
+		if(p != null)
+			memory.processCompleted(p);
 	}
 
 	public long getMaxCpuTime() {
@@ -62,6 +61,16 @@ public class CPU {
 
 	public int getQueueCount() {
 		return cpuQueue.getQueueLength();
+	}
+	public long getMemory() {
+		long memory = 0;
+		if(this.active_process != null)
+			memory += this.active_process.getMemoryNeeded();
+		for(int i = 0; i < cpuQueue.content.size(); i++){
+			Process p = (Process) cpuQueue.content.get(i);
+			memory += p.getMemoryNeeded();
+		}
+		return memory;
 	}
 	
 }

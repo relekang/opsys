@@ -11,7 +11,7 @@ import java.awt.*;
  */
 public class Queue extends JPanel implements Constants {
 	/** The content of the queue */
-	private ArrayList content;
+	public ArrayList content; //FIXME, make private after debugging
 	/** The name of the queue */
 	private String name;
 	/** The maximum number of elements of the queue that will be visible in the GUI */

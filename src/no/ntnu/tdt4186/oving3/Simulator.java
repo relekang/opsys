@@ -65,11 +65,12 @@ public class Simulator implements Constants
 		System.out.print("Simulating...");
 		// Genererate the first process arrival event
 		eventQueue.insertEvent(new Event(NEW_PROCESS, 0));
+		eventQueue.insertEvent(new Event(SWITCH_PROCESS, cpu.getMaxCpuTime()));
 		// Process events until the simulation length is exceeded:
 		while (clock < simulationLength && !eventQueue.isEmpty()) {
 			// Find the next event
 			Event event = eventQueue.getNextEvent();
-			System.out.println("nextEvent:" + event.toString());
+			//System.out.println("nextEvent:" + event.toString());
 			// Find out how much time that passed...
 			long timeDifference = event.getTime()-clock;
 			// ...and update the clock.
@@ -142,7 +143,11 @@ public class Simulator implements Constants
 	 * memory for the processes.
 	 */
 	private void flushMemoryQueue() {
+		long free = memory.getFreeMemory();
 		Process p = memory.checkMemory(clock);
+		if(p != null){
+			//System.err.println("Added process (" + free + "-" + p.getMemoryNeeded() + "=" + memory.getFreeMemory() + ")");
+		}
 		// As long as there is enough memory, processes are moved from the memory queue to the cpu queue
 		while(p != null) {
 			
@@ -150,17 +155,13 @@ public class Simulator implements Constants
 			// Also add new events to the event queue if needed
 			cpu.insertProcess(p);
 			
-			// Try to use the freed memory:
-			flushMemoryQueue();
 			// Update statistics
 			p.updateStatistics(statistics);
 
 			// Check for more free memory
+			p = null;
 			p = memory.checkMemory(clock);
 			
-		}
-		if(cpu.getQueueCount() > 0){
-			eventQueue.insertEvent(new Event(SWITCH_PROCESS, clock + cpu.getMaxCpuTime()));
 		}
 	}
 
@@ -168,9 +169,22 @@ public class Simulator implements Constants
 	 * Simulates a process switch.
 	 */
 	private void switchProcess() {
+		long mem = cpu.getMemory() + io.getMemory() + memory.getFreeMemory();
+		System.out.println("(switchProcess) Totalt: " + mem + "("+ cpu.getMemory() + "+" + io.getMemory() + "+" + memory.getFreeMemory() + ")");
+		System.out.println("(switchProcess) Clock:" + clock);
 		cpu.setActiveProcess();
+		mem = cpu.getMemory() + io.getMemory() + memory.getFreeMemory();
+		System.out.println("(switchProcess) Totalt: " + mem + "("+ cpu.getMemory() + "+" + io.getMemory() + "+" + memory.getFreeMemory() + ")\n");
 		gui.setCpuActive(cpu.getActiveProcess());
 		cpu.process();
+		Process active_process = cpu.getActiveProcess();
+		
+		if(active_process.getCpuTimeNeeded() == 0 || active_process.getCpuTimeNeeded() < cpu.getMaxCpuTime()){
+			eventQueue.insertEvent(new Event(END_PROCESS, clock + active_process.getCpuTimeNeeded()));
+		} 
+		if(active_process.getTimeToNextIoOperation() < cpu.getMaxCpuTime() && active_process.getTimeToNextIoOperation() < active_process.getCpuTimeNeeded()){
+			eventQueue.insertEvent(new Event(IO_REQUEST, clock + active_process.getTimeToNextIoOperation()));
+		}
 		eventQueue.insertEvent(new Event(SWITCH_PROCESS, clock + cpu.getMaxCpuTime()));
 	}
 
@@ -178,7 +192,8 @@ public class Simulator implements Constants
 	 * Ends the active process, and deallocates any resources allocated to it.
 	 */
 	private void endProcess() {
-		//
+		cpu.endProcess();
+		gui.setCpuActive(null);
 	}
 
 	/**
@@ -186,9 +201,14 @@ public class Simulator implements Constants
 	 * perform an I/O operation.
 	 */
 	private void processIoRequest() {
-		//TODO:
-		long time = io.processIo();
-		eventQueue.insertEvent(new Event(END_IO, clock + time));
+		if(io.getActiveProcess() == null){
+			io.setActiveProcess();
+			gui.setIoActive(io.getActiveProcess());
+			io.processIo(); 
+			eventQueue.insertEvent(new Event(END_IO, clock + io.getAvgIoTimeNeeded()));
+		} else {
+			eventQueue.insertEvent(new Event(IO_REQUEST, clock + io.getAvgIoTimeNeeded()));
+		}
 		
 	}
 
@@ -198,10 +218,11 @@ public class Simulator implements Constants
 	 */
 	private void endIoOperation() {
 		//TODO:
-		long time = io.endIo();
-		if(!io.queueIsEmpty()){
-			eventQueue.insertEvent(new Event(IO_REQUEST, clock + time));
-		}
+		io.endIo();
+		gui.setIoActive(null);
+		if(!io.isQueueEmpty())
+			eventQueue.insertEvent(new Event(IO_REQUEST, clock + 0));
+			
 	}
 
 	/**

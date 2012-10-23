@@ -52,7 +52,7 @@ public class Memory {
      */  
 	public Process checkMemory(long clock) {
 		if(!memoryQueue.isEmpty()) { 
-			Process nextProcess = (Process)memoryQueue.getNext();
+			Process nextProcess = (Process) memoryQueue.getNext();
 			if(nextProcess.getMemoryNeeded() <= freeMemory) {
 				// Allocate memory to this process
 				freeMemory -= nextProcess.getMemoryNeeded();
@@ -83,5 +83,9 @@ public class Memory {
     public void processCompleted(Process p) {
 		freeMemory += p.getMemoryNeeded();
     }
+
+	public long getFreeMemory() {
+		return freeMemory;
+	}
 }
 
