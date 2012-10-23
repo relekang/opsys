@@ -38,6 +38,7 @@ public class IO {
 
 	public void insert(Process p) {
 		ioQueue.insert(p);
+		statistics.nofProcessesPlacedInIoQueue++;
 	}
 	public long getAvgIoTimeNeeded(){
 		return this.avgIoTime;
@@ -57,4 +58,11 @@ public class IO {
 		}
 		return memory;
 	}
+	
+	public void timePassed(long timeDifference) {
+		 this.statistics.ioQueueLengthTime += ioQueue.getQueueLength() * timeDifference;
+	        if (this.ioQueue.getQueueLength() > this.statistics.ioQueueLargestLength) {
+	        	this.statistics.ioQueueLargestLength = this.ioQueue.getQueueLength();
+	        }
+	    }
 }

@@ -29,6 +29,7 @@ public class CPU {
 	
 	public void insertProcess(Process p){
 		cpuQueue.insert(p);
+		statistics.nofProcessesPlacedInCpuQueue++;
 	}
 
 	public void setActiveProcess() {
@@ -88,5 +89,13 @@ public class CPU {
 		System.out.println("(getMemory) average size: " + (memory/(cpuQueue.content.size()+1)));
 		return memory;
 	}
-	
+	public void timePassed(long timeDifference) {
+		 this.statistics.cpuQueueLengthTime += this.cpuQueue.getQueueLength() * timeDifference;
+	        if (this.cpuQueue.getQueueLength() > this.statistics.cpuQueueLargestLength) {
+	        	this.statistics.cpuQueueLargestLength = this.cpuQueue.getQueueLength();
+	        }
+	    }
+		
 }
+	
+

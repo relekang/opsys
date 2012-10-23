@@ -78,6 +78,7 @@ public class Simulator implements Constants
 			// Let the memory unit and the GUI know that time has passed
 			memory.timePassed(timeDifference);
 			gui.timePassed(timeDifference);
+			cpu.timePassed(timeDifference);
 			// Deal with the event
 			if (clock < simulationLength) {
 				processEvent(event);
@@ -183,7 +184,7 @@ public class Simulator implements Constants
 			} 
 		} catch (NullPointerException e){ }
 		gui.setCpuActive(cpu.process());
-		
+		statistics.nofSwitchedProcesses++;
 	}
 
 	/**
@@ -203,6 +204,7 @@ public class Simulator implements Constants
 			io.setActiveProcess();
 			gui.setIoActive(io.getActiveProcess());
 			io.processIo(); 
+			statistics.nofProcessedIoOps++;
 			eventQueue.insertEvent(new Event(END_IO, clock + io.getAvgIoTimeNeeded()));
 		} else {
 			eventQueue.insertEvent(new Event(IO_REQUEST, clock + io.getAvgIoTimeNeeded()));

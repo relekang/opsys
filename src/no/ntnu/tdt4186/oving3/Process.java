@@ -48,6 +48,10 @@ public class Process implements Constants
 
 	/** The global time of the last event involving this process */
 	private long timeOfLastEvent;
+	
+	private long timeSpentInCpuQueue =0;
+	
+	private long timeSpentInIoQueue =0;
 
 	/**
 	 * Creates a new process with given parameters. Other parameters are randomly
@@ -103,6 +107,34 @@ public class Process implements Constants
 		  timeSpentWaitingForMemory += clock - timeOfLastEvent;
 		  timeOfLastEvent = clock;
     }
+    
+    public void enterCpu(long clock){
+    	timeSpentInReadyQueue += clock - timeOfLastEvent;
+    	timeOfLastEvent = clock;
+    	
+    }
+    public void enterCpuQueue(long clock){
+    	timeOfLastEvent = clock;
+    	
+    }
+    public void enterIoQueue(long clock){
+    	timeOfLastEvent = clock;
+    	
+    }
+    public void enterIo(long clock){
+    	timeSpentWaitingForIo= clock - timeOfLastEvent;
+    	timeOfLastEvent = clock;
+    	
+    }
+    public void leftCpu(long clock){
+    	timeSpentInCpu += clock - timeOfLastEvent;
+		timeOfLastEvent = clock;
+    }
+    
+    public void leftIo(long clock) {
+		timeSpentInIo += clock - timeOfLastEvent;
+		timeOfLastEvent = clock;
+	}
 
     /**
 	 * Returns the amount of memory needed by this process.
@@ -121,6 +153,9 @@ public class Process implements Constants
 	public void updateStatistics(Statistics statistics) {
 		statistics.totalTimeSpentWaitingForMemory += timeSpentWaitingForMemory;
 		statistics.nofCompletedProcesses++;
+		statistics.cpuTimeSpentWaiting += timeSpentInReadyQueue;
+		statistics.cpuTimeSpentProcessing += timeSpentInCpu;
+		
 	}
 
 	public long getCpuTimeNeeded() {
