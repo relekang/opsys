@@ -108,7 +108,6 @@ public class Process implements Constants
     
     public void enterCpu(long clock){
     	timeSpentInReadyQueue += clock - timeOfLastEvent;
-    	System.out.println("Time spent in readyqueue               "+timeSpentInReadyQueue);
     	timeOfLastEvent = clock;
     }
     public void enterCpuQueue(long clock){
@@ -126,6 +125,7 @@ public class Process implements Constants
     }
     public void leftCpu(long clock){
     	timeSpentInCpu += clock - timeOfLastEvent;
+    	System.out.println(clock - timeOfLastEvent);
 		timeOfLastEvent = clock;
     }
     
