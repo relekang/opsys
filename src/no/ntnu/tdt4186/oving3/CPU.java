@@ -27,18 +27,17 @@ public class CPU {
 		
 	}
 	
-	public void insertProcess(Process p){
+	public void insertProcess(Process p, long clock){
 		cpuQueue.insert(p);
+		p.enterCpuQueue(clock);
 	}
 
 	public void setActiveProcess(long clock) {
 		if(!cpuQueue.isEmpty()){
 			Process p = (Process) cpuQueue.removeNext();
 			if(this.active_process != null) {
-				insertProcess(this.active_process);
-			
+				insertProcess(this.active_process, clock);
 				active_process.leftCpu(clock);
-				active_process.enterCpuQueue(clock);
 			}
 				
 			this.active_process = p;
@@ -47,20 +46,28 @@ public class CPU {
 		}
 	}
 	
-	public Process process(){
+	public Process process(long clock){
 		if(this.active_process == null) return null;
 		
 		if(this.active_process.getCpuTimeNeeded() > maxCpuTime){
-			this.active_process.setCpuTimeNeeded(this.active_process.getCpuTimeNeeded() - maxCpuTime);
-			if(this.active_process.getTimeToNextIoOperation() < maxCpuTime){
-				io.insert(active_process);
+			if(this.active_process.getTimeToNextIoOperation() < maxCpuTime) {
+				this.active_process.setCpuTimeNeeded(this.active_process.getCpuTimeNeeded() - this.active_process.getTimeToNextIoOperation());
+				io.insert(active_process,clock);
 				System.err.println("(process) timeUntilIo: " + this.active_process.getTimeToNextIoOperation());
 				this.active_process = null;
+			} else {
+				this.active_process.setCpuTimeNeeded(this.active_process.getCpuTimeNeeded() - maxCpuTime);
+				if(this.active_process.getTimeToNextIoOperation() < maxCpuTime){
+					io.insert(active_process, clock);
+					System.err.println("(process) timeUntilIo: " + this.active_process.getTimeToNextIoOperation());
+					this.active_process = null;
+				}
 			}
 		} else if(this.active_process.getTimeToNextIoOperation() > this.active_process.getCpuTimeNeeded()) {
 			this.active_process.setCpuTimeNeeded(0);
 		} else if(this.active_process.getTimeToNextIoOperation() < this.active_process.getCpuTimeNeeded()){
-			io.insert(active_process);
+			this.active_process.setCpuTimeNeeded(this.active_process.getCpuTimeNeeded() - this.active_process.getTimeToNextIoOperation());
+			io.insert(active_process, clock);
 			System.err.println("(process) timeUntilIo: " + this.active_process.getTimeToNextIoOperation());
 			this.active_process = null;
 		}
@@ -73,6 +80,7 @@ public class CPU {
 		this.active_process = null;
 		if(p != null)
 			memory.processCompleted(p);
+			p.updateStatistics(statistics);
 	}
 
 	public long getMaxCpuTime() {

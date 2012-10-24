@@ -25,20 +25,23 @@ public class IO {
 
 	public void processIo() {
 		//wat
+		this.active_process.getTimeToNextIoOperation();
 	}
 
-	public void endIo() {
+	public void endIo(long clock) {
 		Process p = this.active_process;
 		this.active_process = null;
-		cpu.insertProcess(p);
+		cpu.insertProcess(p, clock);
+		p.leftIo(clock);
 	}
 
 	public boolean queueIsEmpty() {
 		return ioQueue.isEmpty();
 	}
 
-	public void insert(Process p) {
+	public void insert(Process p, long clock) {
 		ioQueue.insert(p);
+		p.enterIo(clock);
 		statistics.nofProcessesPlacedInIoQueue++;
 	}
 	public long getAvgIoTimeNeeded(){

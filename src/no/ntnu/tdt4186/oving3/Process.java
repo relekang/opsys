@@ -177,7 +177,8 @@ public class Process implements Constants
 	}
 
 	public void setTimeToNextIoOperation(long timeToNextIoOperation) {
-		this.timeToNextIoOperation = timeToNextIoOperation;
+		avgIoInterval = (1 + (long)(Math.random()*25))*cpuTimeNeeded/100;
+		timeToNextIoOperation = avgIoInterval;
 		
 	}
 

@@ -155,10 +155,10 @@ public class Simulator implements Constants
 			
 			// TODO: Add this process to the CPU queue!
 			// Also add new events to the event queue if needed
-			cpu.insertProcess(p);
+			cpu.insertProcess(p, clock);
 			
 			// Update statistics
-			p.updateStatistics(statistics);
+		//	p.updateStatistics(statistics);
 			
 			flushMemoryQueue();
 
@@ -174,12 +174,6 @@ public class Simulator implements Constants
 	 */
 	private void switchProcess() {
 		eventQueue.insertEvent(new Event(SWITCH_PROCESS, clock + cpu.getMaxCpuTime()));
-		Process oldProcess = cpu.getActiveProcess();
-		if(oldProcess != null){
-		cpu.getActiveProcess().leftCpu(clock);
-		
-		}
-		
 		cpu.setActiveProcess(clock);
 		
 		gui.setCpuActive(cpu.getActiveProcess());
@@ -194,7 +188,7 @@ public class Simulator implements Constants
 				eventQueue.insertEvent(new Event(END_PROCESS, clock + active_process.getCpuTimeNeeded()));
 			} 
 		} catch (NullPointerException e){ }
-		gui.setCpuActive(cpu.process());
+		gui.setCpuActive(cpu.process(clock));
 		statistics.nofSwitchedProcesses++;
 	}
 
@@ -229,12 +223,9 @@ public class Simulator implements Constants
 	 */
 	private void endIoOperation() {
 		//TODO:
+		io.endIo(clock);
 		Process oldProcess = io.getActiveProcess();
-		io.endIo();
-		
 		if(oldProcess !=null) {
-			oldProcess.leftIo(clock);
-			oldProcess.enterCpuQueue(clock);
 		}
 		gui.setIoActive(null);
 		if(!io.isQueueEmpty())
