@@ -42,7 +42,6 @@ public class CPU {
 				
 			this.active_process = p;
 			active_process.enterCpu(clock);
-			System.out.println("(setActiveProcess) timeNeededInCpu: " + this.active_process.getCpuTimeNeeded());
 		}
 	}
 	
@@ -68,7 +67,6 @@ public class CPU {
 		} else if(this.active_process.getTimeToNextIoOperation() < this.active_process.getCpuTimeNeeded()){
 			this.active_process.setCpuTimeNeeded(this.active_process.getCpuTimeNeeded() - this.active_process.getTimeToNextIoOperation());
 			io.insert(active_process, clock);
-			System.err.println("(process) timeUntilIo: " + this.active_process.getTimeToNextIoOperation());
 			this.active_process = null;
 		}
 		
@@ -99,7 +97,6 @@ public class CPU {
 			Process p = (Process) cpuQueue.content.get(i);
 			memory += p.getMemoryNeeded();
 		}
-		System.out.println("(getMemory) average size: " + (memory/(cpuQueue.content.size()+1)));
 		return memory;
 	}
 	public void timePassed(long timeDifference) {

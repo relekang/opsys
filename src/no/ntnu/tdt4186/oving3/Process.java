@@ -156,7 +156,6 @@ public class Process implements Constants
 		statistics.cpuTimeSpentWaiting += timeSpentInReadyQueue;
 		statistics.cpuTimeSpentProcessing += timeSpentInCpu;
 		statistics.nofProcessesPlacedInCpuQueue += nofTimesInReadyQueue;
-		statistics.cpuTimeSpentProcessing += this.timeSpentInCpu;
 		System.err.println("Time spent processing " + timeSpentInCpu);
 		
 		
