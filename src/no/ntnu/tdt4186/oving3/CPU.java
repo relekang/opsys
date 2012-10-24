@@ -52,7 +52,6 @@ public class CPU {
 			if(this.active_process.getTimeToNextIoOperation() < maxCpuTime) {
 				this.active_process.setCpuTimeNeeded(this.active_process.getCpuTimeNeeded() - this.active_process.getTimeToNextIoOperation());
 				io.insert(active_process,clock);
-				System.err.println("(process) timeUntilIo: " + this.active_process.getTimeToNextIoOperation());
 				this.active_process = null;
 			} else {
 				this.active_process.setCpuTimeNeeded(this.active_process.getCpuTimeNeeded() - maxCpuTime);
