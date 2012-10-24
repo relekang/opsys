@@ -300,12 +300,4 @@ public class Simulator implements Constants
 		}
 		SimulationGui gui = new SimulationGui(memorySize, maxCpuTime, avgIoTime, simulationLength, avgArrivalInterval);
 	}
-
-	public void addEvent(int eventType, long time) {
-		eventQueue.insertEvent(new Event(eventType, clock + time));
-	}
-
-	public void addEvent(Event event) {
-		eventQueue.insertEvent(event);
-	}
 }
