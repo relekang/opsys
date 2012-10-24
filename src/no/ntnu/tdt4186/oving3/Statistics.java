@@ -66,7 +66,7 @@ public class Statistics
 		System.out.println("Largest occuring cpu queue length:                            "+ cpuQueueLargestLength);
 		System.out.println("Avarage cpu queue length:                                     "+ (float)cpuQueueLengthTime/simulationLength);
 		System.out.println("Largest occuring I/O queue length:                            "+ioQueueLargestLength);
-		System.out.println("Avarage occuring I/O queue length:                            "+(float)cpuQueueLengthTime/simulationLength);
+		System.out.println("Avarage occuring I/O queue length:                            "+(float)ioQueueLengthTime/simulationLength);
 		System.out.println("Average # of times a process has been placed in memory queue: "+1);
 		System.out.println("Avarage # of times a process has been placed in cpu queue:    "+nofProcessesPlacedInCpuQueue/nofCreatedProcesses);
 		System.out.println("Avarage # of times a process has been placed in I/O queue:    "+nofProcessesPlacedInIoQueue/nofCreatedProcesses);
@@ -75,8 +75,8 @@ public class Statistics
 		System.out.println("Average time spent waiting for memory per process:            "+
 			totalTimeSpentWaitingForMemory/nofCompletedProcesses +" ms");
 		System.out.println("Average time spent waiting for cpu per process:               "+(float)cpuTimeSpentWaiting/nofCreatedProcesses+" ms");
-		System.out.println("Avarage time spent processing per process:                    "+(float)cpuTimeSpentProcessing/simulationLength+" ms");
-		System.out.println("Avarage time spent waiting for I/O per process:               "+(float)ioTimeSpentWaiting/simulationLength+ " ms");
-		System.out.println("Avarage time spent in I/O per process:                        "+(float)ioTimeSpentIn/simulationLength+" ms");
+		System.out.println("Avarage time spent processing per process:                    "+(float)cpuTimeSpentProcessing/nofCreatedProcesses+" ms");
+		System.out.println("Avarage time spent waiting for I/O per process:               "+(float)ioTimeSpentWaiting/nofCreatedProcesses+ " ms");
+		System.out.println("Avarage time spent in I/O per process:                        "+(float)ioTimeSpentIn/nofCreatedProcesses+" ms");
 	}
 }
